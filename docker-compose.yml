@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  https-demo:
+    image: reg.wbm.ink/sample/httpsdemo:1.0
+    container_name: https-demo
+    hostname: https-demo
+    environment:
+      - TZ=Asia/Shanghai
+      - ASPNETCORE_URLS=https://+:443;http://+:80;
+      - Kestrel__Certificates__Default__Path=/root/certificate/fullchain.pem
+      - Kestrel__Certificates__Default__KeyPath=/root/certificate/privkey.pem
+    ports:
+      - "40000:80"
+      - "40001:443"
+    restart: on-failure
+    volumes:
+      - ./certs:/root/certificate
+    networks:
+      default:
+        ipv4_address: 172.23.0.16
+    extra_hosts:
+      test.wbm.ink: 172.23.0.16
+
+networks:
+  default:
+    external:
+      name: https-demo-network
+## docker network create https-demo-network --subnet "172.23.0.0/25" --gateway "172.23.0.1"
